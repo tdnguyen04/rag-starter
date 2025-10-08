@@ -16,9 +16,11 @@ load_dotenv()
 # --- 1. LOAD THE DOCUMENT ---
 
 # Initialize the WebBaseLoader with the target URL
-loader = WebBaseLoader("https://python.langchain.com/docs/integrations/document_loaders/web_base/")
+loader = WebBaseLoader(
+    "https://python.langchain.com/docs/integrations/document_loaders/web_base/"
+)
 # Optional: disable SSL certificate verification
-loader.requests_kwargs = {'verify':False}
+loader.requests_kwargs = {"verify": False}
 
 # Execute the load operation from the target URL
 docs = loader.load()
@@ -26,19 +28,13 @@ docs = loader.load()
 # --- 2. SPLIT THE DOCUMENT INTO CHUNKS
 
 # Initialize the Splitter
-text_splitter = RecursiveCharacterTextSplitter(
-  chunk_size=1000,
-  chunk_overlap=200
-)
+text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
 
 # Execute the split operation
 splits = text_splitter.split_documents(docs)
 
 # --- 3. EMBEDDING VECTOR FOR EACH CHUNK ---
-embeddings = OpenAIEmbeddings(
-    model="text-embedding-3-large",
-    dimensions=1024
-)
+embeddings = OpenAIEmbeddings(model="text-embedding-3-large", dimensions=1024)
 
 # Initialize ChromaDB
 vectorstore = Chroma.from_documents(documents=splits, embedding=embeddings)
@@ -53,7 +49,7 @@ print("Successfully created vector store.")
 # Create a sample query to test the vector store
 query = "how to use WebBaseLoader"
 
-# Perform a similarity search. 
+# Perform a similarity search.
 retrieved_docs = vectorstore.similarity_search(query)
 
 # Print the number of documents retrieved (by default, it's 4)
@@ -62,4 +58,3 @@ print(f"\nRetrieved {len(retrieved_docs)} documents for the query: '{query}'")
 # Print the content of the most relevant document chunk
 print("\n--- Most Relevant Chunk ---")
 print(retrieved_docs[0].page_content)
-
